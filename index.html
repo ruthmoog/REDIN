@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Read Every Day in November</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // Set theme before first paint to avoid a flash of the wrong theme.
+    (function () {
+      try {
+        var stored = localStorage.getItem("read-every-day-theme");
+        var theme = stored || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div id="mock-date-banner" class="mock-date-banner" role="status" hidden></div>
+
+  <div class="app">
+    <header>
+      <div class="theme-switch" role="group" aria-label="Theme">
+        <button id="theme-light-btn" class="theme-btn" type="button">
+          <span class="theme-btn-icon" aria-hidden="true">☀️</span>
+          Light
+        </button>
+        <button id="theme-dark-btn" class="theme-btn" type="button">
+          <span class="theme-btn-icon" aria-hidden="true">🌙</span>
+          Dark
+        </button>
+      </div>
+      <h1>📚 Read Every Day in November</h1>
+      <p class="subtitle">Tick off each day you read in November 2026 by clicking that day.</p>
+      <div class="progress">
+        <span id="progress-text">0 / 30 days read</span>
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="calendar-wrap">
+      <div class="weekdays">
+        <div>Sun</div>
+        <div>Mon</div>
+        <div>Tue</div>
+        <div>Wed</div>
+        <div>Thu</div>
+        <div>Fri</div>
+        <div>Sat</div>
+      </div>
+
+      <div id="calendar" class="calendar"></div>
+    </div>
+
+    <div id="catchup-notice" class="notice" role="status" hidden>
+      The challenge has finished, but you can still catch up! Each
+      <strong>catch-up day</strong> (shown in pink below) you tick off makes
+      up for one day you missed.
+    </div>
+
+
+
+    <footer>
+      <button id="reset-btn">Reset progress</button>
+            <p class="device-note">
+        💾 Your progress is saved on this device only, so it'll be here next
+        time you visit — as long as you use the same browser.
+      </p>
+      <p class="print-note">
+        Prefer pen and paper?
+        <a href="resources/REDIN-Calendar.pdf" target="_blank" rel="noopener noreferrer">Download the printable
+          calendar (PDF)</a>.
+      </p>
+      <p class="print-note teaser">
+        Want to add your reading time to our leaderboard? <a
+          href="https://docs.google.com/forms/d/e/1FAIpQLSeD7CTUN8mRoUKzGhX-uiJpeKRJwS7xhxw3vho2PBEbLc7mHw/viewform"
+          target="_blank" rel="noopener noreferrer">Enter your minutes read</a>
+        each day and one of your supports could be gifted a 
+        <em>blind date with a book</em>!
+      </p>
+      <div class="partners">
+        <a class="partner" href="https://www.cruk.org/readeveryday" target="_blank" rel="noopener noreferrer">
+          <span class="partner-logo-chip">
+            <img class="partner-logo" src="assets/logo-CancerResearchUK.svg" alt="Cancer Research UK" width="120"
+              height="40" />
+          </span>
+          <span class="partner-label">cruk.org/readeveryday</span>
+        </a>
+
+        <div class="partner">
+          <span class="partner-logo-chip">
+            <img class="partner-logo" src="assets/logo-SNWomenEmployeeNetwork.svg" alt="SN Women Employee Network"
+              width="120" height="40" />
+          </span>
+          <span class="partner-label">SN Women UK Book Club</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="reset-dialog-overlay" class="dialog-overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="reset-dialog-title"
+      aria-describedby="reset-dialog-desc">
+      <h2 id="reset-dialog-title">Reset all progress?</h2>
+      <p id="reset-dialog-desc">
+        This will clear every day you've checked off for November 2026,
+        including any catch-up days. This can't be undone.
+      </p>
+      <div class="dialog-actions">
+        <button id="reset-dialog-cancel" type="button" class="dialog-btn dialog-btn-secondary">Cancel</button>
+        <button id="reset-dialog-confirm" type="button" class="dialog-btn dialog-btn-danger">Reset progress</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="catchup-dialog-overlay" class="dialog-overlay" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="catchup-dialog-title"
+      aria-describedby="catchup-dialog-desc">
+      <h2 id="catchup-dialog-title">Missed a few days?</h2>
+      <p id="catchup-dialog-desc">
+        It looks like you missed some days — would you like to add catch-up
+        days to your calendar? November's days will be locked in as they are,
+        and you'll get a catch-up day for each one you missed.
+      </p>
+      <div class="dialog-actions">
+        <button id="catchup-dialog-no" type="button" class="dialog-btn dialog-btn-secondary">No thanks</button>
+        <button id="catchup-dialog-yes" type="button" class="dialog-btn dialog-btn-primary">Yes, add catch-up
+          days</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="show-dismissed-btn" class="show-dismissed-btn" type="button" hidden>
+    View dismissed stickers (<span id="dismissed-count">0</span>)
+  </button>
+
+  <div class="stickers">
+    <div id="milestone-sticker" class="sticker" role="status" aria-live="polite" hidden>
+      <span class="sticker-icon" aria-hidden="true">🌟</span>
+      <span class="sticker-text">You're smashing it!</span>
+      <button class="sticker-dismiss" type="button" aria-label="Dismiss this sticker">×</button>
+    </div>
+    <div id="halfway-sticker" class="sticker" role="status" aria-live="polite" hidden>
+      <span class="sticker-icon" aria-hidden="true">🎉</span>
+      <span class="sticker-text">You're halfway! Keep going!</span>
+      <button class="sticker-dismiss" type="button" aria-label="Dismiss this sticker">×</button>
+    </div>
+    <div id="oneweek-sticker" class="sticker" role="status" aria-live="polite" hidden>
+      <span class="sticker-icon" aria-hidden="true">📅</span>
+      <span class="sticker-text">Only one week to go!</span>
+      <button class="sticker-dismiss" type="button" aria-label="Dismiss this sticker">×</button>
+    </div>
+    <div id="complete-sticker" class="sticker" role="status" aria-live="polite" hidden>
+      <span class="sticker-icon" aria-hidden="true">🏆</span>
+      <span class="sticker-text">You've done it!</span>
+      <button class="sticker-dismiss" type="button" aria-label="Dismiss this sticker">×</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

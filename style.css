@@ -1,0 +1,728 @@
+:root,
+[data-theme="dark"] {
+  --bg-start: #11141b;
+  --bg-end: #1f2430;
+  --card: #242a38;
+  --card-border: #313846;
+  --sn-blue: #00b0ca;
+  --cruk-pink: #e60079;
+  --accent: var(--sn-blue);
+  --accent-dark: #007e91;
+  --accent-text: #ffffff;
+  --text: #eef1f6;
+  --muted: #9aa3b2;
+  --today-ring: var(--cruk-pink);
+  --focus-ring: var(--sn-blue);
+}
+
+[data-theme="light"] {
+  --bg-start: #f4f6fb;
+  --bg-end: #e7ebf5;
+  --card: #ffffff;
+  --card-border: #d7dce6;
+  --sn-blue: #00b0ca;
+  --cruk-pink: #e60079;
+  --accent: #00879a;
+  --accent-dark: #006778;
+  --accent-text: #ffffff;
+  --text: #1b1f2a;
+  --muted: #5a6478;
+  --today-ring: var(--cruk-pink);
+  --focus-ring: #00879a;
+}
+
+/*
+  Shared accent colours that don't change between light/dark themes
+  (semantic "danger" red, the brighter pink used in gradients/hover states).
+  Centralised here so they're not scattered as magic hex values throughout
+  the file.
+*/
+:root {
+  --pink-light: #ff4da6;
+  --hover-pink: magenta;
+  --danger: #e74c3c;
+  --danger-strong: #c0392b;
+  --danger-strong-dark: #a5301f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  min-width: 24px;
+  min-height: 24px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--bg-start), var(--bg-end));
+  color: var(--text);
+  font-family: "Atkinson Hyperlegible", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.mock-date-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #000000;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.mock-date-banner[hidden] {
+  display: none;
+}
+
+.mock-date-banner a {
+  color: #ffd43b;
+  text-decoration: underline;
+}
+
+body.has-mock-banner {
+  padding-top: 64px;
+}
+
+.app {
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 2rem;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+}
+
+.teaser {
+  color: var(--text);
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.teaser a {
+  color: var(--cruk-pink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+
+.teaser a:hover,
+.teaser a:focus-visible {
+  color: var(--hover-pink);
+  text-decoration: none;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+#progress-text {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.progress-bar {
+  width: 100%;
+  max-width: 320px;
+  height: 10px;
+  background: var(--card-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--cruk-pink), var(--pink-light));
+  transition: width 0.3s ease;
+}
+
+.calendar-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(40px, 1fr));
+  gap: 8px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  min-width: 320px;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(40px, 1fr));
+  gap: 8px;
+  min-width: 320px;
+}
+
+.day {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--card);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid var(--card-border);
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+
+.day:hover {
+  transform: translateY(-2px);
+}
+
+.day.empty {
+  background: transparent;
+  cursor: default;
+}
+
+.day.empty:hover {
+  transform: none;
+}
+
+.day.locked {
+  cursor: default;
+}
+
+.day.locked:not(.done) {
+  color: var(--muted);
+  border-style: dashed;
+  opacity: 0.55;
+}
+
+.day.locked:hover {
+  transform: none;
+}
+
+.day.today {
+  border-color: var(--today-ring);
+}
+
+.day.done {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.day.done::after {
+  content: "✓";
+  font-size: 0.7em;
+  line-height: 1;
+}
+
+.day.catchup {
+  border-color: var(--cruk-pink);
+  color: var(--cruk-pink);
+  font-size: 0.85em;
+}
+
+.day.catchup.done {
+  background: var(--cruk-pink);
+  color: #ffffff;
+}
+
+.notice {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--card); /* fallback for browsers without color-mix() support */
+  background: color-mix(in srgb, var(--cruk-pink) 12%, var(--card));
+  border: 1px solid var(--cruk-pink);
+  color: var(--text);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.notice[hidden] {
+  display: none;
+}
+
+.device-note {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+footer {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.print-note {
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--card-border);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.print-note a {
+  color: var(--cruk-pink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+
+.print-note a:hover,
+.print-note a:focus-visible {
+  color: var(--hover-pink);
+  text-decoration: none;
+}
+
+#reset-btn {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+#reset-btn:hover {
+  border-color: var(--danger-strong);
+  color: var(--danger);
+}
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.dialog-overlay[hidden] {
+  display: none;
+}
+
+.dialog {
+  width: 100%;
+  max-width: 360px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.dialog h2 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.dialog p {
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dialog-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.dialog-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text);
+}
+
+.dialog-btn-secondary:hover {
+  border-color: var(--accent);
+}
+
+.dialog-btn-danger {
+  background: var(--danger-strong);
+  border: 1px solid var(--danger-strong);
+  color: #ffffff;
+}
+
+.dialog-btn-danger:hover {
+  background: var(--danger-strong-dark);
+  border-color: var(--danger-strong-dark);
+}
+
+.dialog-btn-primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--accent-text);
+}
+
+.dialog-btn-primary:hover {
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
+}
+
+.partners {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--card-border);
+}
+
+.partner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: color 0.2s ease;
+}
+
+a.partner .partner-label {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+a.partner:hover,
+a.partner:focus-visible {
+  color: var(--cruk-pink);
+}
+
+a.partner:hover .partner-label,
+a.partner:focus-visible .partner-label {
+  text-decoration: none;
+}
+
+.partner-logo-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 2px;
+}
+
+/*
+  The partner logos use dark navy brand colours (e.g. Cancer Research UK's
+  #00007E, SN Women's #01324b) that were designed for a light background.
+  Against our dark theme's background those colours fall well below the
+  WCAG AA 3:1 contrast minimum for non-text content, so in dark mode we give
+  them a near-white chip to restore full contrast. Light mode already places
+  them on a light background, so no chip is needed there.
+*/
+[data-theme="dark"] .partner-logo-chip {
+  background: #ffffff;
+  padding: 6px 10px;
+}
+
+.partner-logo {
+  height: 40px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+}
+
+.partner-label {
+  text-align: center;
+}
+
+.theme-switch {
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+.theme-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.theme-btn:disabled {
+  background: var(--accent);
+  color: var(--accent-text);
+  border-color: var(--accent);
+  cursor: default;
+  opacity: 1;
+}
+
+.theme-btn-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.stickers {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 10;
+}
+
+.sticker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 220px;
+  padding: 12px 32px 12px 16px;
+  background: linear-gradient(135deg, var(--cruk-pink), var(--pink-light));
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  transform: rotate(-4deg);
+  animation: sticker-pop 0.4s ease;
+}
+
+.sticker-dismiss {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.sticker-dismiss:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.show-dismissed-btn {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 9;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.show-dismissed-btn:hover {
+  border-color: var(--accent);
+}
+
+.show-dismissed-btn[hidden] {
+  display: none;
+}
+
+.sticker:nth-of-type(even) {
+  transform: rotate(3deg);
+}
+
+.sticker[hidden] {
+  display: none;
+}
+
+.sticker-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+@keyframes sticker-pop {
+  0% {
+    transform: rotate(-4deg) scale(0.4);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(-4deg) scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-4deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .stickers {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    align-items: stretch;
+  }
+
+  .sticker {
+    max-width: none;
+    justify-content: center;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 20px 10px;
+  }
+
+  .show-dismissed-btn {
+    display: none;
+  }
+
+  .app {
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+  }
+
+  .theme-switch {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .theme-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 10px 12px;
+    min-height: 44px;
+  }
+
+  .weekdays,
+  .calendar {
+    gap: 6px;
+  }
+
+  .day {
+    font-size: 0.95rem;
+    font-weight: 400;
+    border-radius: 8px;
+  }
+
+  .notice {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+
+  .partners {
+    gap: 16px;
+  }
+
+  .partner-logo {
+    height: 32px;
+  }
+
+  .partner-label {
+    font-size: 0.75rem;
+  }
+
+  #reset-btn {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 360px) {
+  .weekdays,
+  .calendar {
+    gap: 5px;
+  }
+
+  .day {
+    font-size: 0.9rem;
+  }
+
+  h1 {
+    font-size: 1.15rem;
+  }
+}
+
