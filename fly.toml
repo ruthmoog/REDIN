@@ -1,6 +1,6 @@
-# fly.toml app configuration file generated for redin on 2026-10-27T14:50:49Z
+# fly.toml app configuration file generated for redin on 2026-10-27T16:03:10Z
 #
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+# See https://docs.fly.io/reference/configuration for information about how to use this file.
 #
 
 app = 'redin'
@@ -11,7 +11,7 @@ primary_region = 'lhr'
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
@@ -21,3 +21,6 @@ primary_region = 'lhr'
   cpu_kind = 'shared'
   cpus = 1
   memory_mb = 256
+
+[deploy]
+  strategy = 'canary'
