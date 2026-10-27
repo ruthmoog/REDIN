@@ -11,9 +11,9 @@ primary_region = 'lhr'
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = false
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ['app']
 
 [[vm]]
@@ -23,4 +23,4 @@ primary_region = 'lhr'
   memory_mb = 256
 
 [deploy]
-  strategy = 'canary'
+  strategy = 'immediate'
